@@ -1,11 +1,11 @@
 // board.js - Bàn cờ, luật chơi, kiểm tra thắng/hòa
 // Dùng được ở 3 nơi: trang web (thẻ <script>), Web Worker (importScripts) và Node.js (thực nghiệm)
 
-const BOARD_SIZE = 15;
-const WIN_LENGTH = 5;
-const EMPTY = 0;
-const HUMAN = 1;
-const AI = 2;
+const BOARD_SIZE = 15;         // bàn 15x15
+const WIN_LENGTH = 5;          // 5 ô để thắng
+const EMPTY = 0;               // ô trống
+const HUMAN = 1;               // quân của người
+const AI = 2;                  // quân của máy
 
 // 4 hướng cần kiểm tra: ngang, dọc, chéo xuống, chéo lên
 const DIRECTIONS = [
