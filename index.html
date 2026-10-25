@@ -4,15 +4,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark light">
     <title>Caro AI</title>
-    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Phông chữ có hỗ trợ tiếng Việt (nếu offline sẽ dùng phông hệ thống) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+
+    <!-- Giao diện: css/styles.css -->
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
-    <h1>Caro AI</h1>
-    <p>Đồ án Nhập môn Trí tuệ nhân tạo - Nhóm ...</p>
+    <!-- Bộ icon dùng chung (SVG nội tuyến, không cần thư viện ngoài) -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <defs>
+            <symbol id="i-logo" viewBox="0 0 32 32">
+                <rect x="2" y="2" width="28" height="28" rx="8" fill="currentColor" opacity=".14" />
+                <path d="M9 9l6 6M15 9l-6 6" stroke="var(--x)" stroke-width="2.6" stroke-linecap="round" fill="none" />
+                <circle cx="22" cy="22" r="4.2" stroke="var(--o)" stroke-width="2.6" fill="none" />
+                <path d="M17 22h-1.5M22 17v-1.5" stroke="currentColor" stroke-width="0" />
+            </symbol>
+            <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="2" /><path d="M12 9v4l2.5 2M9.5 2.8h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></symbol>
+            <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.4" fill="none" stroke="currentColor" stroke-width="2" /><path d="M2.8 20c.4-3.6 3-5.6 6.2-5.6s5.8 2 6.2 5.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /><path d="M16.5 4.9a3.3 3.3 0 010 6.2M18.3 14.7c1.8.7 3.1 2.5 3.4 5.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></symbol>
+            <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2" /><path d="M4.5 20.5c.5-4 3.5-6.2 7.5-6.2s7 2.2 7.5 6.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></symbol>
+            <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2" /><rect x="9.5" y="9.5" width="5" height="5" rx="1" fill="currentColor" /><path d="M9 2.5v3M15 2.5v3M9 18.5v3M15 18.5v3M2.5 9h3M2.5 15h3M18.5 9h3M18.5 15h3" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></symbol>
+            <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 001.5.9l10.5-6.5a1 1 0 000-1.8L9.5 4.6A1 1 0 008 5.5z" fill="currentColor" /></symbol>
+            <symbol id="i-restart" viewBox="0 0 24 24"><path d="M4 12a8 8 0 108-8H8.5M8.5 4L11 1.5M8.5 4L11 6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></symbol>
+            <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2.5L4.5 13.5h6L9.5 21.5l9-11.5h-6.2L13 2.5z" fill="currentColor" /></symbol>
+            <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 01-10 0V4zM7 6H3.5c0 3 1.3 4.5 3.7 5M17 6h3.5c0 3-1.3 4.5-3.7 5M12 14v4M8 21h8M9.5 18h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></symbol>
+            <symbol id="i-handshake" viewBox="0 0 24 24"><path d="M3 12l3.5-5.5L11 8l3-2 3.5 1.5L21 12l-5 5.5-2-1.5-2 2-2.5-2L7 18l-4-6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /><path d="M9 11l3 2 2.5-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></symbol>
+            <symbol id="i-robot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="11.5" rx="3.5" fill="none" stroke="currentColor" stroke-width="2" /><circle cx="9" cy="13.5" r="1.6" fill="currentColor" /><circle cx="15" cy="13.5" r="1.6" fill="currentColor" /><path d="M12 8V4.5M12 4.5h.01M2 13v2M22 13v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></symbol>
+            <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4.5h12.5l-2.2 4 2.2 4H5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></symbol>
+            <symbol id="i-hash" viewBox="0 0 24 24"><path d="M9 3L7 21M17 3l-2 18M4 8.5h17M3 15.5h17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></symbol>
+            <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="2" /><path d="M8 10.5V8a4 4 0 018 0v2.5" fill="none" stroke="currentColor" stroke-width="2" /></symbol>
+            <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2" /><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></symbol>
+            <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 119.5 4a7 7 0 0010.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /></symbol>
+            <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4v-5z" fill="currentColor" /><path d="M15.5 9a4.2 4.2 0 010 6M18 6.5a8 8 0 010 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></symbol>
+            <symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4v-5z" fill="currentColor" /><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></symbol>
+            <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.7-6.5 10-6.5S22 12 22 12s-3.7 6.5-10 6.5S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2" /><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2" /></symbol>
+            <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9M13 4.5v5M7 14.5v5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></symbol>
+            <symbol id="i-swords" viewBox="0 0 24 24"><path d="M5 4l9 9M4 5l2.5 2.5M3.5 20.5l3-3M9 15l-3 3M19 4l-9 9M20 5l-2.5 2.5M20.5 20.5l-3-3M15 15l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></symbol>
+        </defs>
+    </svg>
 
-    <div id="board"></div>
+    <noscript><p class="noscript">Trang này cần bật JavaScript để chơi.</p></noscript>
+
+    <div class="app">
+        <!-- Thanh trên cùng -->
+        <header class="site-header">
+            <div class="brand">
+                <svg class="logo" aria-hidden="true"><use href="#i-logo" /></svg>
+                <div class="brand-text">
+                    <h1>Caro AI</h1>
+                    <p>Đồ án Nhập môn Trí tuệ nhân tạo - Nhóm ...</p>
+                </div>
+            </div>
+            <div class="header-tools">
+                <button type="button" class="icon-btn" id="btn-sound" aria-label="Bật hoặc tắt âm thanh" aria-pressed="true" title="Âm thanh">
+                    <svg class="on" aria-hidden="true"><use href="#i-sound" /></svg>
+                    <svg class="off" aria-hidden="true"><use href="#i-mute" /></svg>
+                </button>
+                <button type="button" class="icon-btn" id="btn-theme" aria-label="Đổi giao diện sáng hoặc tối" title="Sáng / Tối">
+                    <svg class="to-light" aria-hidden="true"><use href="#i-sun" /></svg>
+                    <svg class="to-dark" aria-hidden="true"><use href="#i-moon" /></svg>
+                </button>
+                <button type="button" id="btn-restart" class="btn ghost small">
+                    <svg aria-hidden="true"><use href="#i-restart" /></svg><span>Chơi lại</span>
+                </button>
+            </div>
+        </header>
+
+        <main class="layout">
+            <!-- Khu bàn cờ -->
+            <section class="stage" aria-label="Bàn cờ">
+                <!-- Thông báo (bắt đầu, đến lượt ai, thắng, hòa...). Hàm showMessage() ghi chữ vào #message -->
+                <div class="statusbar" id="statusbar" data-kind="idle">
+                    <span class="status-ico" aria-hidden="true">
+                        <svg class="k-idle"><use href="#i-swords" /></svg>
+                        <svg class="k-play"><use href="#i-bolt" /></svg>
+                        <svg class="k-win"><use href="#i-trophy" /></svg>
+                        <svg class="k-draw"><use href="#i-handshake" /></svg>
+                    </span>
+                    <i class="chip mini" id="status-chip" hidden></i>
+                    <p id="message" role="status" aria-live="polite">Chào mừng! Hãy thiết lập trận đấu để bắt đầu.</p>
+                </div>
+
+                <!-- Bàn cờ: ui.js tự vẽ 15x15 ô vào #board (kèm tọa độ A-O / 1-15) -->
+                <div class="board-card">
+                    <div class="board-frame">
+                        <div class="coord coord-x" id="coord-x" aria-hidden="true"></div>
+                        <div class="coord coord-y" id="coord-y" aria-hidden="true"></div>
+                        <div class="board-holder">
+                            <div id="board"></div>
+                            <!-- Banner "Trận đấu bắt đầu" hiện giữa bàn cờ rồi tự tắt -->
+                            <div class="banner" id="banner" hidden>
+                                <div class="banner-inner">
+                                    <span class="banner-tag">Trận đấu</span>
+                                    <strong id="banner-title">Bắt đầu!</strong>
+                                    <span id="banner-sub"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bảng thông tin trận đấu -->
+            <aside class="panel" aria-label="Thông tin trận đấu">
+                <!-- Người chơi 1 (giá trị ô = 1). ui.js ghi tên, quân và đánh dấu người đang đến lượt -->
+                <div class="player" id="card-1">
+                    <span class="chip x" id="chip-1"></span>
+                    <div class="who">
+                        <strong id="pname-1">Người chơi 1</strong>
+                        <small id="prole-1">Quân X</small>
+                    </div>
+                    <span class="turn-badge"><i></i>Đến lượt</span>
+                </div>
+
+                <!-- Đồng hồ và số nước đi -->
+                <div class="clock" id="clock" data-state="idle">
+                    <div class="clock-top">
+                        <svg aria-hidden="true"><use href="#i-clock" /></svg>
+                        <span class="clock-state" id="clock-state">Chưa bắt đầu</span>
+                    </div>
+                    <div id="timer" aria-label="Thời gian trận đấu">00:00</div>
+                    <small id="moves"><svg aria-hidden="true"><use href="#i-hash" /></svg><span>Số nước đi: 0</span></small>
+                </div>
+
+                <!-- Người chơi 2 (giá trị ô = 2) -->
+                <div class="player" id="card-2">
+                    <span class="chip o" id="chip-2"></span>
+                    <div class="who">
+                        <strong id="pname-2">Người chơi 2</strong>
+                        <small id="prole-2">Quân O</small>
+                    </div>
+                    <span class="turn-badge"><i></i>Đến lượt</span>
+                </div>
+
+                <!-- Lịch sử nước đi -->
+                <div class="history-card">
+                    <h3>Diễn biến trận đấu</h3>
+                    <ol id="history" aria-label="Các nước đã đi"></ol>
+                    <p class="empty-note" id="history-empty">Chưa có nước đi nào.</p>
+                </div>
+
+                <!-- Kết quả cuối trận (ẩn cho tới khi trận kết thúc) -->
+                <div id="result" hidden>
+                    <div class="result-head">
+                        <svg aria-hidden="true"><use href="#i-flag" /></svg>
+                        <strong id="result-title">Trận đấu kết thúc</strong>
+                    </div>
+                    <span id="result-text"></span>
+                    <button type="button" id="btn-rematch" class="btn primary block">
+                        <svg aria-hidden="true"><use href="#i-restart" /></svg><span>Đấu lại</span>
+                    </button>
+                </div>
+
+                <p class="lock-note">
+                    <svg aria-hidden="true"><use href="#i-lock" /></svg>
+                    <span>Quân cờ và người đi trước được khóa khi trận đã bắt đầu. Muốn đổi, hãy bấm <b>Chơi lại</b>.</span>
+                </p>
+            </aside>
+        </main>
+    </div>
+
+    <!-- HỘP THOẠI THIẾT LẬP TRẬN ĐẤU: hiện khi mở trang và khi bấm "Chơi lại" -->
+    <dialog id="setup" aria-labelledby="setup-title">
+        <form id="setup-form" novalidate>
+            <div class="setup-hero">
+                <svg class="logo big" aria-hidden="true"><use href="#i-logo" /></svg>
+                <div>
+                    <h2 id="setup-title">Thiết lập trận đấu</h2>
+                    <p class="sub">Chọn trước khi bắt đầu. Đã bắt đầu thì không được đổi, muốn đổi hãy bấm "Chơi lại".</p>
+                </div>
+            </div>
+
+            <!-- Chế độ -->
+            <fieldset class="field">
+                <legend><b>1</b>Chế độ chơi</legend>
+                <div class="seg two">
+                    <!-- Chơi với người -->
+                    <label><input type="radio" name="mode" value="pvp" checked><span><svg aria-hidden="true"><use href="#i-users" /></svg>2 người chơi</span></label>
+                    <!-- Chơi với máy (AI) -->
+                    <label><input type="radio" name="mode" value="pve"><span><svg aria-hidden="true"><use href="#i-robot" /></svg>Chơi với máy</span></label>
+                </div>
+            </fieldset>
+
+            <!-- Tên người chơi -->
+            <fieldset class="field">
+                <legend><b>2</b>Tên người chơi</legend>
+                <div class="names">
+                    <label class="input-wrap">
+                        <span class="lbl">Người chơi 1</span>
+                        <span class="input-box"><svg aria-hidden="true"><use href="#i-user" /></svg>
+                            <input type="text" id="name1" maxlength="20" placeholder="Ví dụ: Nguyễn Văn A" autocomplete="off"></span>
+                    </label>
+                    <label class="input-wrap">
+                        <span class="lbl">Người chơi 2</span>
+                        <span class="input-box"><svg aria-hidden="true"><use href="#i-user" /></svg>
+                            <input type="text" id="name2" maxlength="20" placeholder="Ví dụ: Nguyễn Văn B" autocomplete="off"></span>
+                    </label>
+                </div>
+            </fieldset>
+
+            <!-- Chọn quân: người chơi 1 chọn thì người chơi 2 nhận quân còn lại -->
+            <fieldset class="field">
+                <legend><b>3</b><span id="piece-who">Người chơi 1</span>&nbsp;chọn quân</legend>
+                <div class="seg two pieces">
+                    <label><input type="radio" name="piece" value="X" checked><span><i class="chip x"></i>Quân X</span></label>
+                    <label><input type="radio" name="piece" value="O"><span><i class="chip o"></i>Quân O</span></label>
+                </div>
+                <p class="note" id="piece-note"></p>
+            </fieldset>
+
+            <!-- Ai đánh trước: value 1 = người chơi 1, value 2 = người chơi 2 (hoặc máy) -->
+            <fieldset class="field">
+                <legend><b>4</b>Ai đánh trước?</legend>
+                <div class="seg two">
+                    <label><input type="radio" name="first" value="1" checked><span><svg aria-hidden="true"><use href="#i-play" /></svg><em class="nm" id="first-1">Người chơi 1</em></span></label>
+                    <label><input type="radio" name="first" value="2"><span><svg aria-hidden="true"><use href="#i-play" /></svg><em class="nm" id="first-2">Người chơi 2</em></span></label>
+                </div>
+            </fieldset>
+
+            <!-- Độ khó: chỉ hiện khi chơi với máy. Giá trị khớp CONTRACT: easy | medium | hard -->
+            <fieldset class="field" id="field-level" hidden>
+                <legend><b>5</b>Độ khó của máy</legend>
+                <div class="seg three">
+                    <label><input type="radio" name="level" value="easy"><span><svg aria-hidden="true"><use href="#i-sliders" /></svg>Dễ</span></label>
+                    <label><input type="radio" name="level" value="medium" checked><span><svg aria-hidden="true"><use href="#i-sliders" /></svg>Vừa</span></label>
+                    <label><input type="radio" name="level" value="hard"><span><svg aria-hidden="true"><use href="#i-sliders" /></svg>Khó</span></label>
+                </div>
+            </fieldset>
+
+            <p class="error" id="setup-error" role="alert"></p>
+
+            <div class="actions">
+                <button type="button" id="btn-cancel" class="btn ghost" hidden>Quay lại trận</button>
+                <button type="submit" class="btn primary">
+                    <svg aria-hidden="true"><use href="#i-play" /></svg><span>Bắt đầu trận đấu</span>
+                </button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- HỘP THOẠI KẾT THÚC TRẬN: ui.js tự mở trong showResult() -->
+    <dialog id="result-dialog" aria-labelledby="rd-title">
+        <div class="confetti" id="confetti" aria-hidden="true"></div>
+        <div class="rd-body" id="rd-body" data-kind="win">
+            <div class="rd-ico" aria-hidden="true">
+                <svg class="k-win"><use href="#i-trophy" /></svg>
+                <svg class="k-lose"><use href="#i-robot" /></svg>
+                <svg class="k-draw"><use href="#i-handshake" /></svg>
+            </div>
+            <span class="rd-tag" id="rd-tag">Trận đấu kết thúc</span>
+            <h2 id="rd-title">Chiến thắng!</h2>
+            <p id="rd-sub" class="rd-sub"></p>
+            <div class="rd-winner" id="rd-winner" hidden>
+                <i class="chip" id="rd-chip"></i>
+                <div><strong id="rd-name"></strong><small id="rd-role"></small></div>
+            </div>
+            <div class="rd-stats">
+                <div><svg aria-hidden="true"><use href="#i-clock" /></svg><b id="rd-time">00:00</b><small>Thời gian</small></div>
+                <div><svg aria-hidden="true"><use href="#i-hash" /></svg><b id="rd-moves">0</b><small>Số nước đi</small></div>
+            </div>
+            <div class="rd-actions">
+                <button type="button" id="btn-rematch-modal" class="btn primary block">
+                    <svg aria-hidden="true"><use href="#i-restart" /></svg><span>Đấu lại</span>
+                </button>
+                <div class="rd-row">
+                    <button type="button" id="btn-newsetup" class="btn ghost"><svg aria-hidden="true"><use href="#i-sliders" /></svg><span>Đổi thiết lập</span></button>
+                    <button type="button" id="btn-close-result" class="btn ghost"><svg aria-hidden="true"><use href="#i-eye" /></svg><span>Xem bàn cờ</span></button>
+                </div>
+            </div>
+        </div>
+    </dialog>
 
     <script src="js/board.js"></script>
     <script src="js/evaluate.js"></script>
