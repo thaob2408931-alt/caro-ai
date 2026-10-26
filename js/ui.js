@@ -10,6 +10,8 @@
    - showResult()    : hiện kết quả (thời gian + số nước đi + hộp thoại kết thúc + nút "Đấu lại").
    - Người bấm "Bắt đầu trận đấu" hoặc "Đấu lại" -> gọi onNewGame() của main.js.
 
+  Trang chủ (banner): mở trang là hiện #home, bấm "Chơi ngay" mới vào trận và mở form thiết lập (mục 12).
+
   Giá trị ô theo CONTRACT: 0 = trống, 1 = người chơi 1 (HUMAN), 2 = người chơi 2 (AI nếu chơi với máy).
 */
 
@@ -484,9 +486,10 @@
   function playDraw() { beep(440, 0.18, "sine", 0.06); beep(440, 0.22, "sine", 0.06, 0.2); }
 
   function applySound() {
-    const btn = $("btn-sound");
-    btn.setAttribute("aria-pressed", String(soundOn));
-    btn.title = soundOn ? "Tắt âm thanh" : "Bật âm thanh";
+    document.querySelectorAll(".js-sound").forEach((btn) => {   // nút ở trang chủ và ở header trận
+      btn.setAttribute("aria-pressed", String(soundOn));
+      btn.title = soundOn ? "Tắt âm thanh" : "Bật âm thanh";
+    });
   }
 
   // Giao diện sáng/tối: mặc định là SÁNG, chỉ tối khi người chơi bấm nút đổi (và được nhớ cho lần sau)
@@ -577,9 +580,25 @@
     refreshForm();
   }
 
-  function openSetup() {
+  // Đưa form về mặc định: 2 người chơi, tên trống, quân X, người 1 đi trước, độ khó Vừa
+  function resetForm() {
+    savedName2 = "";
+    checkRadio("mode", "pvp");
+    $("name1").value = "";
+    $("name2").value = "";
+    $("name2").disabled = false;
+    checkRadio("piece", "X");
+    checkRadio("first", 1);
+    checkRadio("level", "medium");
+    refreshForm();
+  }
+
+  // openSetup(true) = ván mới hoàn toàn (xóa hết thông tin cũ). Gọi không tham số (nút "Chơi lại", "Đổi thiết lập")
+  // = giữ lại thiết lập của ván trước để khỏi nhập lại. Kiểm tra === true vì nút bấm truyền sự kiện vào hàm này.
+  function openSetup(fresh) {
     if (resultDlg.open) closeDialog(resultDlg);
-    if (confirmed) fillForm(confirmed);
+    if (fresh === true) resetForm();
+    else if (confirmed) fillForm(confirmed);
     $("setup-error").textContent = "";
     $("btn-cancel").hidden = !confirmed;   // chưa có trận nào thì không có nút "Quay lại"
     openDialog(setupEl);
@@ -676,15 +695,15 @@
   resultDlg.addEventListener("click", (e) => { if (e.target === resultDlg) closeDialog(resultDlg); });   // bấm nền mờ = đóng
 
   // Âm thanh và giao diện sáng/tối
-  $("btn-sound").addEventListener("click", () => {
+  document.querySelectorAll(".js-sound").forEach((btn) => btn.addEventListener("click", () => {
     soundOn = !soundOn;
     store("caro-sound", soundOn ? "on" : "off");
     applySound();
     if (soundOn) beep(660, 0.1, "sine", 0.07);
-  });
-  $("btn-theme").addEventListener("click", () => {
+  }));
+  document.querySelectorAll(".js-theme").forEach((btn) => btn.addEventListener("click", () => {
     applyTheme(document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light");
-  });
+  }));
   applySound();
 
   setupEl.addEventListener("cancel", (e) => {                     // phím Esc: chưa có trận nào thì không cho đóng form
@@ -692,5 +711,123 @@
   });
 
   refreshForm();
-  openSetup();                                                    // mở trang là hiện form thiết lập
+
+  // 12. Trang chủ (banner) 
+  const homeEl = $("home");
+  const appEl = $("app");
+
+  // Ván minh họa trên banner: [hàng, cột, quân] theo thứ tự đi. 5 quân X chéo (2,2)..(6,6) là đường thắng.
+  const DEMO_MOVES = [
+    [4, 4, "x"], [4, 5, "o"], [3, 3, "x"], [3, 4, "o"], [5, 5, "x"],
+    [6, 5, "o"], [2, 2, "x"], [2, 3, "o"], [6, 6, "x"],
+  ];
+  const DEMO_WIN = [[2, 2], [3, 3], [4, 4], [5, 5], [6, 6]];
+
+  let demoCells = null;     // demoCells["r,c"] = thẻ ô của bàn minh họa
+  let demoTimers = [];      // các hẹn giờ của ván minh họa (để dừng khi rời trang chủ)
+
+  // Vẽ bàn cờ minh họa 9x9 một lần, bằng class .cell của bàn cờ thật (không đụng vào #board)
+  function buildHomeBoard() {
+    const box = $("home-board");
+    if (!box || demoCells) return;
+    const n = 9;
+    demoCells = {};
+    box.style.setProperty("--n", n);
+    const frag = document.createDocumentFragment();
+    for (let r = 0; r < n; r++) {
+      for (let c = 0; c < n; c++) {
+        const d = document.createElement("div");
+        d.className = "cell empty";
+        demoCells[r + "," + c] = d;
+        frag.appendChild(d);
+      }
+    }
+    const strike = document.createElement("div");
+    strike.className = "strike";
+    frag.appendChild(strike);
+    box.appendChild(frag);
+  }
+
+  function demoStop() {
+    demoTimers.forEach(clearTimeout);
+    demoTimers = [];
+  }
+
+  function demoAt(ms, fn) {
+    demoTimers.push(setTimeout(fn, ms));
+  }
+
+  // Đánh ván mẫu: đặt từng quân, gạch đường thắng, giữ một lúc rồi xóa và đánh lại
+  function playDemo() {
+    buildHomeBoard();
+    demoStop();
+    const box = $("home-board");
+    const pill = $("demo-pill");
+    const strike = box.querySelector(".strike");
+    const still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    box.classList.remove("fade");
+    strike.classList.remove("on");
+    pill.classList.remove("on");
+    Object.keys(demoCells).forEach((k) => { demoCells[k].className = "cell empty"; demoCells[k].style.removeProperty("--i"); });
+
+    let prev = null;
+    function place(m) {
+      if (prev) prev.classList.remove("last");
+      const cell = demoCells[m[0] + "," + m[1]];
+      cell.className = "cell " + m[2] + " last";
+      prev = cell;
+    }
+    function win() {
+      if (prev) prev.classList.remove("last");
+      DEMO_WIN.forEach((p, i) => {
+        const cell = demoCells[p[0] + "," + p[1]];
+        cell.style.setProperty("--i", i);
+        cell.classList.add("win");
+      });
+      strike.classList.add("on");
+      pill.classList.add("on");
+    }
+
+    if (still) {                                     // người dùng tắt chuyển động: hiện luôn ván đã xong
+      DEMO_MOVES.forEach(place);
+      win();
+      return;
+    }
+
+    const STEP = 520;
+    DEMO_MOVES.forEach((m, k) => demoAt(700 + k * STEP, () => place(m)));
+    const end = 700 + DEMO_MOVES.length * STEP;
+    demoAt(end, win);
+    demoAt(end + 3400, () => { box.classList.add("fade"); pill.classList.remove("on"); });
+    demoAt(end + 4100, playDemo);
+  }
+
+  // Hiện trang chủ, ẩn khu trận (trận đang chơi vẫn được giữ nguyên)
+  function showHome() {
+    if (resultDlg.open) closeDialog(resultDlg);
+    if (setupEl.open) closeDialog(setupEl);
+    appEl.hidden = true;
+    homeEl.hidden = false;
+    $("btn-continue").hidden = !confirmed;           // có trận đang chơi/vừa chơi thì cho quay lại
+    $("btn-play").querySelector("span").textContent = confirmed ? "Chơi ván mới" : "Chơi ngay";
+    playDemo();
+    window.scrollTo(0, 0);
+    (confirmed ? $("btn-continue") : $("btn-play")).focus({ preventScroll: true });
+  }
+
+  // Vào khu trận. newGame = true thì mở form thiết lập (giống bấm "Chơi lại")
+  function enterGame(newGame) {
+    demoStop();                                      // rời trang chủ thì dừng ván minh họa
+    homeEl.hidden = true;
+    appEl.hidden = false;
+    window.scrollTo(0, 0);
+    if (newGame) openSetup(true);                    // "Chơi ngay" / "Chơi ván mới": form trống, không mang thông tin ván cũ
+  }
+
+  $("btn-play").addEventListener("click", () => enterGame(true));
+  $("btn-continue").addEventListener("click", () => enterGame(false));
+  $("btn-home").addEventListener("click", showHome);
+
+  showHome();                                                     // mở trang là hiện banner, chưa hiện form thiết lập
 })();

@@ -45,13 +45,63 @@
             <symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4v-5z" fill="currentColor" /><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></symbol>
             <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.7-6.5 10-6.5S22 12 22 12s-3.7 6.5-10 6.5S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2" /><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2" /></symbol>
             <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9M13 4.5v5M7 14.5v5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></symbol>
+            <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11L12 4l8.5 7M6 9.5V20h12V9.5M10 20v-5.5h4V20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></symbol>
             <symbol id="i-swords" viewBox="0 0 24 24"><path d="M5 4l9 9M4 5l2.5 2.5M3.5 20.5l3-3M9 15l-3 3M19 4l-9 9M20 5l-2.5 2.5M20.5 20.5l-3-3M15 15l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></symbol>
         </defs>
     </svg>
 
     <noscript><p class="noscript">Trang này cần bật JavaScript để chơi.</p></noscript>
 
-    <div class="app">
+    <!-- TRANG CHỦ (banner): hiện đầu tiên khi mở trang. Bấm "Chơi ngay" mới vào trận và mở form thiết lập -->
+    <section class="home" id="home" aria-labelledby="home-title">
+        <header class="home-nav">
+            <div class="header-tools">
+                <button type="button" class="icon-btn js-sound" aria-label="Bật hoặc tắt âm thanh" aria-pressed="true" title="Âm thanh">
+                    <svg class="on" aria-hidden="true"><use href="#i-sound" /></svg>
+                    <svg class="off" aria-hidden="true"><use href="#i-mute" /></svg>
+                </button>
+                <button type="button" class="icon-btn js-theme" aria-label="Đổi giao diện sáng hoặc tối" title="Sáng / Tối">
+                    <svg class="to-light" aria-hidden="true"><use href="#i-sun" /></svg>
+                    <svg class="to-dark" aria-hidden="true"><use href="#i-moon" /></svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="hero">
+            <div class="hero-copy">
+                <h1 class="hero-logo" id="home-title">
+                    <svg aria-hidden="true"><use href="#i-logo" /></svg>
+                    <span>Caro AI</span>
+                </h1>
+                <p class="hero-sub">Mỗi nước đi là một lần đấu trí. Thách đấu bạn bè hoặc chinh phục máy với ba cấp độ. Chỉ vài giây để bắt đầu trận đấu!</p>
+
+                <div class="hero-cta">
+                    <button type="button" id="btn-play" class="btn primary lg">
+                        <svg aria-hidden="true"><use href="#i-play" /></svg><span>Chơi ngay</span>
+                    </button>
+                    <button type="button" id="btn-continue" class="btn ghost lg" hidden>
+                        <svg aria-hidden="true"><use href="#i-swords" /></svg><span>Tiếp tục trận đấu</span>
+                    </button>
+                </div>
+
+                <ul class="hero-facts" aria-label="Thông tin nhanh">
+                    <li><svg aria-hidden="true"><use href="#i-hash" /></svg><b>15×15</b><span>ô trên bàn cờ</span></li>
+                    <li><svg aria-hidden="true"><use href="#i-trophy" /></svg><b>5 quân</b><span>liên tiếp là thắng</span></li>
+                    <li><svg aria-hidden="true"><use href="#i-robot" /></svg><b>3 mức</b><span>độ khó khi đấu với máy</span></li>
+                </ul>
+            </div>
+
+            <!-- Bàn cờ minh họa: ui.js tự đánh một ván mẫu lặp đi lặp lại, dùng đúng kiểu quân X/O của bàn cờ thật -->
+            <div class="hero-visual" aria-hidden="true">
+                <div class="board-card">
+                    <div class="home-board" id="home-board"></div>
+                </div>
+                <div class="demo-pill" id="demo-pill"><i class="chip mini x"></i><span>Nối đủ 5 quân liên tiếp là thắng</span></div>
+            </div>
+        </div>
+    </section>
+
+    <div class="app" id="app" hidden>
         <!-- Thanh trên cùng -->
         <header class="site-header">
             <div class="brand">
@@ -62,13 +112,16 @@
                 </div>
             </div>
             <div class="header-tools">
-                <button type="button" class="icon-btn" id="btn-sound" aria-label="Bật hoặc tắt âm thanh" aria-pressed="true" title="Âm thanh">
+                <button type="button" class="icon-btn js-sound" id="btn-sound" aria-label="Bật hoặc tắt âm thanh" aria-pressed="true" title="Âm thanh">
                     <svg class="on" aria-hidden="true"><use href="#i-sound" /></svg>
                     <svg class="off" aria-hidden="true"><use href="#i-mute" /></svg>
                 </button>
-                <button type="button" class="icon-btn" id="btn-theme" aria-label="Đổi giao diện sáng hoặc tối" title="Sáng / Tối">
+                <button type="button" class="icon-btn js-theme" id="btn-theme" aria-label="Đổi giao diện sáng hoặc tối" title="Sáng / Tối">
                     <svg class="to-light" aria-hidden="true"><use href="#i-sun" /></svg>
                     <svg class="to-dark" aria-hidden="true"><use href="#i-moon" /></svg>
+                </button>
+                <button type="button" id="btn-home" class="btn ghost small" title="Về trang chủ">
+                    <svg aria-hidden="true"><use href="#i-home" /></svg><span>Trang chủ</span>
                 </button>
                 <button type="button" id="btn-restart" class="btn ghost small">
                     <svg aria-hidden="true"><use href="#i-restart" /></svg><span>Chơi lại</span>
@@ -188,7 +241,7 @@
                     <!-- Chơi với người -->
                     <label><input type="radio" name="mode" value="pvp" checked><span><svg aria-hidden="true"><use href="#i-users" /></svg>2 người chơi</span></label>
                     <!-- Chơi với máy (AI) -->
-                    <label><input type="radio" name="mode" value="pve"><span><svg aria-hidden="true"><use href="#i-robot" /></svg>Chơi với máy</span></label>
+                    <label><input type="radio" name="mode" value="pve"><span><svg aria-hidden="true"><use href="#i-robot" /></svg>Chơi với máy</em></span></label>
                 </div>
             </fieldset>
 
